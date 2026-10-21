@@ -31,3 +31,7 @@ export async function claimSpeech(id: string) {
   const result = await (await db()).runAsync('UPDATE occurrences SET spoken = 1 WHERE id = ? AND spoken = 0', id);
   return result.changes === 1;
 }
+
+export async function clearReminderHistory() {
+  await (await db()).runAsync('DELETE FROM occurrences');
+}

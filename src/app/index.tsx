@@ -1,16 +1,17 @@
 import { useRouter } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { assistant } from '@/assistant';
-import type { AssistantContext, ProposedSchedule, ProposedTask } from '@/assistant/types';
+import type { AssistantContext, ProposedTask } from '@/assistant/types';
 import { ChatInput } from '@/components/ChatInput';
 import { ConfirmCard } from '@/components/ConfirmCard';
 import { MessageBubble } from '@/components/MessageBubble';
 import { MoreMenu } from '@/components/MoreMenu';
 import { colors, sizes } from '@/components/theme';
-import { createFact, createTask, deleteTask, listFacts, listTasks, updateTask } from '@/domain/db';
+import { describeSchedule } from '@/domain/describe';
+import { createFact, createTask, deleteTask, getSetting, listFacts, listTasks, updateTask } from '@/domain/db';
 import { toSchedule } from '@/domain/timing';
 import type { Task, Weekday } from '@/domain/types';
 
@@ -39,13 +40,6 @@ async function buildContext(): Promise<AssistantContext> {
   };
 }
 
-function describeSchedule(s: ProposedSchedule) {
-  const times = s.times?.join(' and ') ?? '';
-  if (s.type === 'daily') return `every day at ${times}`;
-  if (s.type === 'weekly') return `on ${s.weekdays?.join(', ')} at ${times}`;
-  return s.inMinutes ? `in ${s.inMinutes} minutes` : `${s.day ?? 'today'} at ${times}`;
-}
-
 function describeProposal(p: Proposal) {
   if (p.type === 'remove') return `Remove ${p.task.title}?`;
   return `${p.task.title}, ${describeSchedule(p.task.schedule)}?`;
@@ -62,6 +56,13 @@ export default function ChatScreen() {
   ]);
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // First run: send a new User through the questions before the chat.
+  useEffect(() => {
+    getSetting<boolean>('onboarded').then((done) => {
+      if (!done) router.replace('/onboarding');
+    });
+  }, [router]);
 
   const scrollToEnd = useCallback(() => {
     requestAnimationFrame(() => listRef.current?.scrollToEnd({ animated: true }));

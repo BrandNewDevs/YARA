@@ -19,6 +19,7 @@ interface Props {
   accessibilityLabel?: string;
   accessibilityHint?: string;
   expanded?: boolean;
+  selected?: boolean;
   variant?: Variant;
   disabled?: boolean;
   onPress: () => void;
@@ -28,7 +29,7 @@ interface Props {
 
 /** shadcn-style button: 56dp target, visible focus ring, pressed and disabled states. */
 export function Button({
-  label, accessibilityLabel, accessibilityHint, expanded, variant = 'default', disabled, onPress, style,
+  label, accessibilityLabel, accessibilityHint, expanded, selected, variant = 'default', disabled, onPress, style,
 }: Props) {
   const [focused, setFocused] = useState(false);
   const v = variants[variant];
@@ -37,7 +38,7 @@ export function Button({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled: !!disabled, expanded }}
+      accessibilityState={{ disabled: !!disabled, expanded, selected }}
       disabled={disabled}
       onPress={onPress}
       onFocus={() => setFocused(true)}

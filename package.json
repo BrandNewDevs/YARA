@@ -41,7 +41,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test:domain": "node --import ./ml/node-loader.mjs --test src/domain/timing.test.ts",
+    "test:domain": "node --import ./ml/node-loader.mjs --test src/domain/timing.test.ts src/domain/describe.test.ts",
     "test:assistant": "node --import ./ml/node-loader.mjs --test src/assistant/assistant.test.ts src/assistant/litert.test.ts",
     "test:reminders": "node --import ./ml/node-loader.mjs --test src/reminders/reminders.test.ts"
   },
