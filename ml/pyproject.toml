@@ -1,0 +1,9 @@
+[project]
+name = "yara-ml"
+version = "0.1.0"
+description = "Prompt, schema and evals for YARA's on-device Gemma assistant"
+requires-python = ">=3.11"
+dependencies = ["jsonschema>=4.22"]
+
+[tool.uv]
+package = false

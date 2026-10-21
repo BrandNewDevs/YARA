@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssistantReply",
+  "type": "object",
+  "required": ["reply", "action"],
+  "properties": {
+    "reply": { "type": "string", "maxLength": 400 },
+    "action": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "enum": ["none", "remember", "propose_task", "propose_change", "propose_removal", "show_help"]
+        },
+        "facts": { "type": "array", "items": { "type": "string" }, "maxItems": 5 },
+        "taskId": { "type": "string" },
+        "task": {
+          "type": "object",
+          "required": ["kind", "title", "schedule"],
+          "properties": {
+            "kind": { "enum": ["routine", "appointment"] },
+            "title": { "type": "string" },
+            "details": { "type": "string" },
+            "schedule": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": { "enum": ["once", "daily", "weekly"] },
+                "times": { "type": "array", "items": { "type": "string", "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$" } },
+                "weekdays": { "type": "array", "items": { "enum": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] } },
+                "day": { "enum": ["today", "tomorrow", "mon", "tue", "wed", "thu", "fri", "sat", "sun"] },
+                "inMinutes": { "type": "integer", "minimum": 1, "maximum": 1440 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
