@@ -9,8 +9,8 @@ A mobile reminder assistant for elderly people. Users talk or type to YARA in pl
 
 ## Development
 ```bash
-npm install
-npx expo start
-npx tsc --noEmit   # typecheck
-npx expo lint      # lint
+pnpm install
+pnpm web
+pnpm exec tsc --noEmit   # typecheck
+pnpm lint          # lint
 ```
