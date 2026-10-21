@@ -6,7 +6,7 @@ import { renderPrompt, templates } from './prompts';
 import { schemas } from './schemas';
 import type { AssistantContext, ChatMessage } from './types';
 import type { OnboardingForm } from '@/domain/types';
-import type { Generate } from './transport';
+import { formatChatHistory, type Generate } from './transport';
 
 export interface EvalCase {
   id: string;
@@ -36,7 +36,7 @@ export async function runRawEvaluation(generate: Generate, onProgress?: (complet
     try {
       raw = await generate({
         system: renderPrompt(suite, context, { form: test.form, task: test.task }),
-        messages: (test.messages ?? ['Please prepare the result.']).map(m => typeof m === 'string' ? { role: 'user' as const, text: m } : m),
+        messages: formatChatHistory((test.messages ?? ['Please prepare the result.']).map(m => typeof m === 'string' ? { role: 'user' as const, text: m } : m)),
         schema: schemas[suite],
         onText(text) { if (text && firstReplyMs === undefined) firstReplyMs = Date.now() - started; },
       });

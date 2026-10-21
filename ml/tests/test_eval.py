@@ -37,7 +37,7 @@ class EvalTests(unittest.TestCase):
                                endpoint='http://localhost:11434', model='gemma4:e2b', timeout=7)
         endpoint, payload, timeout = request.call_args.args
         self.assertEqual(timeout, 7)
-        self.assertEqual(payload['messages'][1], {'role': 'assistant', 'content': 'Earlier'})
+        self.assertEqual(payload['messages'][1], {'role': 'assistant', 'content': evaluator.compact({'reply': 'Earlier', 'action': {'type': 'none'}})})
         self.assertEqual(payload['format'], {'type': 'object'})
         self.assertEqual(payload['options']['temperature'], 0)
         self.assertTrue(endpoint.endswith('/api/chat'))
