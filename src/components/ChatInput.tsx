@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import { useLayoutEffect, useRef, useState, type ComponentRef } from 'react';
+import { Platform, StyleSheet, TextInput, View, type TextInputKeyPressEvent } from 'react-native';
 
 import { IconButton } from './IconButton';
 import { colors, sizes, type } from './theme';
@@ -14,8 +14,41 @@ const MAX_HEIGHT = 180;
 
 export function ChatInput({ disabled, onSend }: Props) {
   const [text, setText] = useState('');
-  const [height, setHeight] = useState(MIN_HEIGHT);
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const caret = useRef<number | null>(null);
   const canSend = !disabled && text.trim().length > 0;
+
+  // Web: Enter sends; Cmd/Ctrl+Enter inserts a line break at the cursor. On a phone the
+  // keyboard's send key submits instead.
+  const onKeyPress = (e: TextInputKeyPressEvent) => {
+    if (Platform.OS !== 'web') return;
+    const key = e.nativeEvent as { key: string; metaKey?: boolean; ctrlKey?: boolean };
+    if (key.key !== 'Enter') return;
+    e.preventDefault();
+    if (key.metaKey || key.ctrlKey) {
+      const el = inputRef.current as unknown as HTMLTextAreaElement | null;
+      const start = el?.selectionStart ?? text.length;
+      const end = el?.selectionEnd ?? text.length;
+      caret.current = start + 1;
+      setText(text.slice(0, start) + '\n' + text.slice(end));
+    } else {
+      send();
+    }
+  };
+
+  // Native multiline inputs grow between minHeight and maxHeight on their own. The web
+  // textarea does not, so measure it: collapse, then fit to scrollHeight (padding included).
+  useLayoutEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const el = inputRef.current as unknown as HTMLTextAreaElement | null;
+    if (!el) return;
+    if (caret.current !== null) {
+      el.setSelectionRange(caret.current, caret.current);
+      caret.current = null;
+    }
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, el.scrollHeight))}px`;
+  }, [text]);
 
   const send = () => {
     if (!canSend) return;
@@ -26,17 +59,15 @@ export function ChatInput({ disabled, onSend }: Props) {
   return (
     <View style={styles.composer}>
       <TextInput
+        ref={inputRef}
         accessibilityLabel="Message to YARA"
         value={text}
         onChangeText={setText}
-        onSubmitEditing={send}
+        onKeyPress={onKeyPress}
+        onSubmitEditing={Platform.OS === 'web' ? undefined : send}
         placeholder="Type here"
         placeholderTextColor={colors.muted}
-        // Grows with the text up to MAX_HEIGHT, then scrolls.
-        onContentSizeChange={(e) =>
-          setHeight(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, Math.ceil(e.nativeEvent.contentSize.height) + 20)))
-        }
-        style={[styles.input, { height }]}
+        style={styles.input}
         multiline
         returnKeyType="send"
         submitBehavior="blurAndSubmit"
@@ -59,6 +90,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    minHeight: MIN_HEIGHT,
+    maxHeight: MAX_HEIGHT,
     paddingVertical: 10,
     fontSize: type.body,
     color: colors.foreground,
