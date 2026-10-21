@@ -1,41 +1,70 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+# YARA
 
-## Expo has changed — do not trust your training data
+Android app (Expo SDK 58, React Native 0.88, TypeScript) where an on-device Gemma 4 E2B model helps elderly Users keep their Routines and Appointments. Two people build it in 2 hours, each with a coding agent.
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+Use the words in `GLOSSARY.md` in code, UI text and prompts (Task, Routine, Appointment, Reminder, Memory, Check-in, Trusted Contact, Emergency Number).
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+## Which person are you?
 
-## Commands
+Your human is Person A or Person B. Ask once if you don't know. Then read your file before touching code:
 
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
+- **Person A** (model, prompts, evals, `src/assistant/`): `docs/agents/person-a.md`
+- **Person B** (screens, storage, notifications, speech): `docs/agents/person-b.md`
+
+Scope and the cut line live in `docs/WORKPLAN.md`. Work top-down through your task list; stop at the cut line and tell your human.
+
+## Ownership
+
+| Path | Owner |
+| --- | --- |
+| `ml/`, `src/assistant/` | A |
+| `src/app/`, `src/components/`, `src/domain/` (except `types.ts`), `src/hooks/` | B |
+| `package.json`, `app.json` | Whoever needs a change; merge it to `main` within minutes |
+
+**Contract files** are `src/domain/types.ts`, `src/assistant/types.ts` and `ml/action.schema.json`. Both sides code against them. Change one in its own small PR titled `CONTRACT: ...` and tell your human to alert the other person. Keep the TypeScript types and the JSON schema in step in the same PR.
+
+## Invariants
+
+These are product rules. Code and prompts enforce them.
+
+- **Confirm first.** The Assistant only proposes Task changes (`propose_task`, `propose_change`, `propose_removal`). The app applies one after the User taps Yes. Gemma adds low-stakes Memory facts (`remember`) on its own.
+- **Emergency before model.** A keyword check in code (`src/domain/emergency.ts`) runs on every User message before Gemma. The help screen (Emergency Number, Trusted Contacts) is reachable in one tap from every screen.
+- **Decline medical advice.** The Assistant never gives dosages or diagnoses. It points to a doctor or pharmacist.
+- **Stored text fires.** Every Task keeps three Gemma-written `reminderTexts`, written when the Task is created. A fired Reminder uses stored text and needs no model call.
+- **Date parts, not timestamps.** Gemma outputs weekdays, `HH:MM` and `inMinutes`. App code computes real times in the phone's local time zone.
+- **One call, one JSON.** Each turn returns `{ reply, action }`, validated against `ml/action.schema.json`. An invalid reply becomes "Sorry, could you say that again?" with action `none`.
+- **Plain words.** Android only, English only. Large type, high contrast, short sentences.
+- **Private by default.** Memory and conversations stay on the phone.
+
+## Workflow
+
+- Branch per person and topic: `a/<topic>` or `b/<topic>`. Commit small and often, open a PR into `main` when a task's Done check passes. `main` takes PRs only.
+- Tick a task's checkbox in your task file only after its **Done when** check passes. Paste the command and its output in the PR.
+- Run `npx tsc --noEmit` and `npx expo lint` before every PR. Person A also runs `python ml/eval.py`.
+- Keep changes inside your owned paths. Message your human when you need something from the other side.
+- Match surrounding code: short comments, no unused dependencies.
+
+## Run it
+
+`android/` is generated and gitignored. Rebuild after adding a native module or changing `app.json` plugins; JS changes reload live.
 
 ```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
+export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
+export PATH=$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH
+
+adb devices                       # phone must show "device" (USB debugging on)
+npx expo run:android --device <serial>   # native build + install (slow, only when native code changed)
+npx expo start --dev-client       # JS dev server for the installed build
 ```
 
-Run lint and typecheck before declaring any task done.
+Test phone: iQOO 10R (Snapdragon 8s Gen 3, Android 16, ~7.4 GB RAM, arm64). The model runs on arm64 phones only, never on x86 emulators.
 
-## Navigation & Routing
+## Expo changes fast
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
+Expo APIs differ from what you remember. Before writing code that touches an Expo, EAS or React Native API, read the matching page of the versioned docs at `https://docs.expo.dev/versions/v58.0.0/`, or find it through `https://docs.expo.dev/llms.txt`.
 
-## Building with EAS
-
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
-
-## Rules
-
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+- Add packages with `npx expo install <package>` so versions match the SDK.
+- Use Expo Router for navigation. Routes live in `src/app/`; components, hooks and utilities live outside it.
+- Never hand-edit `android/`. Configure native behaviour in `app.json` and config plugins.
+- Check `npx expo-doctor` after dependency changes.
