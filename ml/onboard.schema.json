@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OnboardingResult",
+  "type": "object",
+  "properties": {
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "$ref": "action.schema.json#/$defs/proposedTask"
+      }
+    },
+    "welcome": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "maxLength": 400
+    }
+  },
+  "required": ["facts", "tasks", "welcome"],
+  "additionalProperties": false
+}

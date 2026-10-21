@@ -27,11 +27,15 @@ export const mockAssistant: Assistant = {
   async onboard(form) {
     return {
       facts: [`Prefers to be called ${form.preferredName}`, `Wakes at ${form.wakeTime}`],
-      tasks: form.medicines.map((m) => ({
-        kind: 'routine' as const,
-        title: `Take ${m.name}`,
-        schedule: { type: 'daily' as const, times: m.times },
-      })),
+      tasks: form.medicines.map((m): ProposedTask => {
+        const [first, ...rest] = m.times;
+        if (first === undefined) throw new Error('Please add a time for each medicine.');
+        return {
+          kind: 'routine',
+          title: `Take ${m.name}`,
+          schedule: { type: 'daily', times: [first, ...rest] },
+        };
+      }),
       welcome: `Hello ${form.preferredName}, I'm YARA. I'll help you remember things.`,
     };
   },

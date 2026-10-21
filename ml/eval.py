@@ -8,7 +8,7 @@ import json
 import re
 from pathlib import Path
 
-from jsonschema import validate
+from jsonschema import FormatChecker, validate
 
 HERE = Path(__file__).parent
 SCHEMA = json.loads((HERE / "action.schema.json").read_text())
@@ -56,7 +56,7 @@ def main() -> None:
         raw = generate(render_prompt(case), case["messages"])
         try:
             out = json.loads(raw)
-            validate(out, SCHEMA)
+            validate(out, SCHEMA, format_checker=FormatChecker())
             problems = check(case, out)
         except Exception as e:  # invalid JSON or schema violation counts as a failure
             problems = [f"invalid output: {e}"]
