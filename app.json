@@ -47,7 +47,8 @@
       "expo-sqlite",
       "expo-audio",
       "expo-localization",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
