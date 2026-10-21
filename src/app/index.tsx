@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { mockAssistant as assistant } from '@/assistant/mock';
+import { assistant } from '@/assistant';
 import type { AssistantContext, ProposedSchedule, ProposedTask } from '@/assistant/types';
 import { ChatInput } from '@/components/ChatInput';
 import { ConfirmCard } from '@/components/ConfirmCard';
