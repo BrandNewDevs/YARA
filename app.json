@@ -45,7 +45,15 @@
         }
       ],
       "expo-sqlite",
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./assets/sounds/reminder.wav"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

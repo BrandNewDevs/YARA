@@ -12,7 +12,7 @@ export function MoreMenu() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  const go = (path: '/help') => {
+  const go = (path: '/help' | '/reminders') => {
     setOpen(false);
     router.push(path);
   };
@@ -22,7 +22,7 @@ export function MoreMenu() {
       <IconButton
         icon="more-vertical"
         label="More options"
-        hint="Opens a menu with Help"
+        hint="Opens Reminders and Help"
         expanded={open}
         onPress={() => setOpen(true)}
         style={styles.trigger}
@@ -34,6 +34,10 @@ export function MoreMenu() {
           style={[styles.backdrop, { paddingTop: insets.top + 64 }]}
           onPress={() => setOpen(false)}>
           <View accessibilityViewIsModal style={styles.menu}>
+            <Pressable accessibilityRole="menuitem" accessibilityLabel="Spoken Reminders"
+              onPress={() => go('/reminders')} style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
+              <Text style={styles.itemLabel}>Spoken Reminders</Text>
+            </Pressable>
             <Pressable
               accessibilityRole="menuitem"
               accessibilityLabel="Help"

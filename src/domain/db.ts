@@ -2,6 +2,13 @@ import * as SQLite from 'expo-sqlite';
 
 import type { MemoryFact, ReminderTexts, Schedule, Task, TaskKind } from './types';
 
+const taskListeners = new Set<() => Promise<void>>();
+export function onTasksChanged(listener: () => Promise<void>) {
+  taskListeners.add(listener);
+  return () => { taskListeners.delete(listener); };
+}
+async function tasksChanged() { await Promise.allSettled([...taskListeners].map(listener => listener())); }
+
 let opening: Promise<SQLite.SQLiteDatabase> | undefined;
 
 /** Opens the database once; every function below shares it. */
@@ -67,6 +74,7 @@ export async function createTask(input: NewTask): Promise<Task> {
     task.id, task.kind, task.title, task.details ?? null,
     JSON.stringify(task.schedule), JSON.stringify(task.reminderTexts), task.createdAt,
   );
+  await tasksChanged();
   return task;
 }
 
@@ -89,11 +97,13 @@ export async function updateTask(id: string, input: NewTask): Promise<Task | nul
     input.kind, input.title, input.details ?? null,
     JSON.stringify(input.schedule), JSON.stringify(input.reminderTexts), id,
   );
+  await tasksChanged();
   return { ...input, id, createdAt: existing.createdAt };
 }
 
 export async function deleteTask(id: string): Promise<void> {
   await (await db()).runAsync('DELETE FROM tasks WHERE id = ?', id);
+  await tasksChanged();
 }
 
 interface FactRow {
