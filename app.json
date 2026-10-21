@@ -45,9 +45,6 @@
         }
       ],
       "expo-sqlite",
-      "expo-audio",
-      "expo-localization",
-      "expo-notifications",
       "expo-asset"
     ],
     "experiments": {
@@ -55,7 +52,8 @@
       "reactCompiler": true
     },
     "platforms": [
-      "android"
+      "android",
+      "web"
     ]
   }
 }

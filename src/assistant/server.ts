@@ -4,6 +4,8 @@ import { AssistantError } from './transport';
 export function createServerGenerate(options: {
   endpoint?: string;
   model?: string;
+  /** Ollama only allows think on models that support it (gemma4 does, gemma3 does not). */
+  think?: boolean;
   timeoutMs?: number;
   fetch?: typeof globalThis.fetch;
 } = {}): Generate {
@@ -18,7 +20,7 @@ export function createServerGenerate(options: {
         method: 'POST', signal: controller.signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: options.model ?? 'gemma4:e2b', stream: true, think: true, format: schema,
+          model: options.model ?? 'gemma4:e2b', stream: true, think: options.think ?? true, format: schema,
           messages: [{ role: 'system', content: system }, ...messages.map(m => ({ role: m.role, content: m.text }))],
           options: { temperature: 0, num_ctx: 8192, num_predict: 4096 },
         }),
