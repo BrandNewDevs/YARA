@@ -1,16 +1,20 @@
+// shadcn "zinc" dark tokens. Text/background pairs are all above 4.5:1 contrast.
 export const colors = {
-  background: '#FFFFFF',
-  text: '#111111',
-  muted: '#4A4A4A',
-  primary: '#0B5FD1',
-  onPrimary: '#FFFFFF',
-  userBubble: '#0B5FD1',
-  assistantBubble: '#EEF2F7',
-  border: '#C9D1DC',
-  help: '#B3261E',
-  onHelp: '#FFFFFF',
-  yes: '#1B7A37',
-  no: '#4A4A4A',
+  background: '#09090B',
+  card: '#18181B',
+  foreground: '#FAFAFA',
+  muted: '#A1A1AA',
+  border: '#3F3F46',
+  ring: '#A1A1AA',
+  primary: '#FAFAFA',
+  onPrimary: '#18181B',
+  secondary: '#27272A',
+  onSecondary: '#FAFAFA',
+  destructive: '#B91C1C',
+  onDestructive: '#FFFFFF',
+  success: '#15803D',
+  onSuccess: '#FFFFFF',
+  overlay: 'rgba(0,0,0,0.6)',
 };
 
 export const type = {
@@ -21,6 +25,6 @@ export const type = {
 
 export const sizes = {
   button: 56,
-  radius: 18,
+  radius: 14,
   gap: 12,
 };
