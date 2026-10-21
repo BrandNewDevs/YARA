@@ -145,3 +145,8 @@ export async function setSetting(key: string, value: unknown): Promise<void> {
 export async function deleteSetting(key: string): Promise<void> {
   await (await db()).runAsync('DELETE FROM settings WHERE key = ?', key);
 }
+
+/** Wipes Tasks, Memory and settings so onboarding can start from nothing. */
+export async function resetAll(): Promise<void> {
+  await (await db()).execAsync('DELETE FROM tasks; DELETE FROM memory_facts; DELETE FROM settings;');
+}

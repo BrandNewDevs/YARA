@@ -83,14 +83,16 @@ export function createAssistant(generate: Generate): Assistant {
         messages: [{ role: 'user', text: 'Please prepare the result.' }], schema: schemas.onboard }));
       if (!validators.onboard(out)) throw new AssistantError('invalid_output', 'Please review the details and try again.');
       for (const item of expected) {
-        if (!out.tasks.some(t => t.kind === item.kind && t.title === item.title
-            && scheduleKey(t.schedule) === scheduleKey(item.schedule)
-            && (!('details' in item) || !item.details || t.details === item.details))) {
-          throw new AssistantError('invalid_output', 'Please review the proposed Tasks and try again.');
-        }
+        const match = out.tasks.find(t => t.kind === item.kind && t.title === item.title
+            && scheduleKey(t.schedule) === scheduleKey(item.schedule));
+        if (!match) throw new AssistantError('invalid_output', 'Please review the proposed Tasks and try again.');
+        // The form is the source of truth for details; a model that drops them is repaired, not rejected.
+        if (item.details && match.details !== item.details) match.details = item.details;
       }
-      if ((!form.freeText.trim() && out.tasks.length !== expected.length)
-          || (form.preferredName && !out.facts.includes(`Prefers to be called ${form.preferredName}`))) {
+      // Likewise the name fact: the form has it, so add it rather than fail.
+      const nameFact = `Prefers to be called ${form.preferredName}`;
+      if (form.preferredName && !out.facts.includes(nameFact)) out.facts.unshift(nameFact);
+      if (!form.freeText.trim() && out.tasks.length !== expected.length) {
         throw new AssistantError('invalid_output', 'Please review the details and try again.');
       }
       for (const task of out.tasks) assertDateSource(task.schedule, JSON.stringify(form));

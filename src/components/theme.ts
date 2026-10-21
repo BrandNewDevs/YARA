@@ -14,6 +14,8 @@ export const colors = {
   onDestructive: '#FFFFFF',
   success: '#15803D',
   onSuccess: '#FFFFFF',
+  /** Desktop browser backdrop around the phone-width column. */
+  desktop: '#3F3F46',
   overlay: 'rgba(0,0,0,0.6)',
 };
 
