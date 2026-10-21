@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReminderTexts",
+  "type": "array",
+  "items": {
+    "type": "string",
+    "minLength": 1,
+    "pattern": "\\S",
+    "maxLength": 159
+  },
+  "minItems": 3,
+  "maxItems": 3,
+  "uniqueItems": true
+}
