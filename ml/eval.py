@@ -62,7 +62,8 @@ def request_json(endpoint, payload=None, timeout=120):
 
 def generate(system, messages, schema, *, endpoint, model, timeout):
     turns = [{'role': 'user', 'content': m} if isinstance(m, str)
-             else {'role': m['role'], 'content': m['text']} for m in messages]
+             else {'role': m['role'], 'content': compact({'reply': m['text'], 'action': {'type': 'none'}})
+                   if m['role'] == 'assistant' else m['text']} for m in messages]
     result = request_json(endpoint.rstrip('/') + '/api/chat', {
         'model': model, 'messages': [{'role': 'system', 'content': system}, *turns],
         'format': schema, 'stream': False, 'think': True,

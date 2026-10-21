@@ -93,3 +93,27 @@ test('mock asks for a missing time and covers onboarding and Reminder texts', as
   assert.equal(validators.onboard(onboard), true);
   assert.equal(validators.reminders(await mockAssistant.reminderTexts(onboard.tasks[0], context)), true);
 });
+
+
+test('multi-turn chat encodes past Assistant replies as JSON without replaying actions', async () => {
+  const history = [...messages,
+    { role: 'assistant' as const, text: 'Shall I add this Routine?' },
+    { role: 'assistant' as const, text: 'Done. I will remind you.' },
+    { role: 'user' as const, text: 'I have an appointment with doctor on 30 October, 2026' }];
+  const original = structuredClone(history);
+  const clarification = { reply: 'What time is your Appointment on October 30?', action: { type: 'none' } };
+  let calls = 0;
+  const assistant = createAssistant(async request => {
+    calls++;
+    // Model fixture reproduces the observed format drift when plain replies are replayed.
+    const formatted = request.messages.filter(m => m.role === 'assistant').every(m => {
+      try { const out = JSON.parse(m.text); return validators.chat(out) && out.action.type === 'none'; }
+      catch { return false; }
+    });
+    assert.deepEqual(request.messages.filter(m => m.role === 'user'), history.filter(m => m.role === 'user'));
+    return formatted ? JSON.stringify(clarification) : clarification.reply;
+  });
+  assert.deepEqual(await assistant.chat(history, context), clarification);
+  assert.deepEqual(history, original);
+  assert.equal(calls, 1);
+});

@@ -61,3 +61,24 @@ Reminder generation remain outside the cut line.
 
 Python and TypeScript prompt rendering were compared for every synthetic case:
 36/36 match byte-for-byte, including the bundled output schema.
+
+## 2026-10-21 — Multi-turn Appointment clarification
+
+Reproduced a plain-text answer after chat confirmations: "What time is your
+appointment on October 30, 2026?". JSON parsing rejected it and returned the generic
+fallback. A fresh conversation worked. Replaying prior Assistant display text as
+JSON replies with `action: none` restored valid output in the same conversation;
+confirmed Tasks/Memory still come from context. No retries or relaxed validation.
+The shared runtime and both evaluators now use that history format.
+
+- Before: `python ml/eval.py --output ...` — 32/36 correct, 36/36 schema-valid;
+  targets failed (laptop-history-before.json). This baseline corpus did not yet
+  include the multi-turn reproduction.
+- After: same command with the added case — 34/37 correct, 37/37 schema-valid;
+  targets passed (laptop-history-after.json). All 10 safety and 6 generation cases
+  passed. Remaining failures: ambiguous-time, appointment-weekly, appointment-date.
+  Other raw outcomes vary between runs; this is not a general quality guarantee.
+- `python ml/eval.py --case appointment-after-confirmations` — 1/1 passed.
+- Real TypeScript adapter with the full reproduction — valid clarification in one
+  call. Browser at localhost:8081 also asks for the time instead of apologizing.
+- TypeScript and lint passed; Node tests 20/20 and Python tests 14/14 passed.

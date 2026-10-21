@@ -1,7 +1,7 @@
 import type { Assistant, AssistantContext, AssistantReply, ProposedSchedule } from './types';
 import { schemas, validators } from './schemas';
 import { renderPrompt } from './prompts';
-import { AssistantError, type Generate } from './transport';
+import { AssistantError, formatChatHistory, type Generate } from './transport';
 import { formTasks } from './onboarding';
 import { partialReply } from './stream';
 
@@ -42,7 +42,9 @@ export function createAssistant(generate: Generate): Assistant {
         }
         let lastPartial = '';
         const raw = await generate({
-          system: renderPrompt('chat', context), messages, schema: schemas.chat,
+          system: renderPrompt('chat', context),
+          messages: formatChatHistory(messages),
+          schema: schemas.chat,
           onText(text) {
             const reply = partialReply(text);
             if (reply !== undefined && reply !== lastPartial && reply.length <= 400) {

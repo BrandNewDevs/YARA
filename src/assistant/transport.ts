@@ -18,3 +18,10 @@ export class AssistantError extends Error {
     this.name = 'AssistantError';
   }
 }
+
+/** Display-only history never replays actions; confirmed state comes from context. */
+export function formatChatHistory(messages: ChatMessage[]): ChatMessage[] {
+  return messages.map(message => message.role === 'assistant'
+    ? { ...message, text: JSON.stringify({ reply: message.text, action: { type: 'none' } }) }
+    : message);
+}
