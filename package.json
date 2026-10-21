@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@expo/vector-icons": "^15.1.1",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "expo": "~58.0.16",
