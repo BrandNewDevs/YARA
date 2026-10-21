@@ -63,8 +63,7 @@ then changes, and returns an unsubscribe function. Download progress is 0–1.
 The states are `idle`, `downloading`, `loading`, `ready`, and `error`. Preparation
 failure publishes `error` with a plain-language message, then rejects its
 promise. Calling `prepare()` again retries. Cached models may skip downloading;
-mock and server adapters may become ready without loading a native model. This
-PR declares the interface; later adapters implement it.
+mock and server adapters may become ready without loading a native model. The adapters implement this interface.
 
 ## Checks
 
@@ -79,5 +78,4 @@ python ml/eval.py
 
 The Python suite checks schemas and valid/invalid output, including impossible
 calendar dates. `src/assistant/types.test.ts` is compiled by the normal typecheck
-and asserts accepted and rejected structural shapes. The model evaluator remains
-unimplemented until the laptop evaluation PR; its failure is not a model result.
+and asserts accepted and rejected structural shapes. The model evaluator scores raw Gemma responses; see RESULTS.md for laptop evidence and pending phone checks.

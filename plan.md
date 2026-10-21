@@ -3,15 +3,13 @@
 ## Goal and delivery structure
 
 Complete Person A's core responsibilities (A1–A8) across **five phases and six
-focused PRs**. Deliver a laptop Assistant first, then on-device Gemma, with shared
+focused work units**. The User subsequently requested one feature PR with multiple commits for the complete core AI work. That delivery instruction supersedes the separate-PR and merge-wait sequence below. Deliver a laptop Assistant first, then on-device Gemma, with shared
 prompts, strict validation, and reproducible evaluations. This is a multi-session
 plan. The original two-hour checkpoint selects a demo backend; it does not define
 completion of the full AI implementation.
 
 Phase numbers belong only in this plan. PR titles and descriptions name the
-behavior added or fixed. The human controls merging; each PR is monitored and
-left ready to merge. Dependent PRs start from updated main after their dependency
-merges, without silently creating a stack.
+behavior added or fixed. The human controls merging. Monitor the single PR through its latest checks and leave it ready for review. The work-unit titles below guide commits, not separate PRs.
 
 ### Baseline inspected on 2026-10-21
 
@@ -25,9 +23,7 @@ No GitHub Actions workflows exist in the baseline commit.
 ### Ownership and product rules
 
 Person A owns `ml/` and `src/assistant/`. Person B owns screens, storage, local
-schedule calculation, emergency detection, notifications, and speech. Shared
-contract changes get their own `CONTRACT: ...` PR, with TypeScript and JSON Schema
-updated together and the human asked to alert Person B.
+schedule calculation, emergency detection, notifications, and speech. Shared contracts keep TypeScript and JSON Schema updated together. For this delivery, the contract is an isolated commit in the single PR; the human must alert Person B.
 
 The Assistant proposes Task changes; only Yes applies them. Low-stakes Memory
 facts may be saved automatically. Emergency detection runs before inference.
@@ -206,13 +202,15 @@ and cannot be recorded as passing. Tick A8 only with phone results.
   result rather than inventing a passing eval.
 - Use npx expo install for packages, read matching SDK 58 docs before API work,
   and run expo-doctor after dependency changes.
-- Open into main, keep the contract PR separate, and register PRs with the thread
-  when linking tools are available.
+- Open the single feature PR into main and register it with the thread.
 - Monitor checks until finished, fix failures, address review feedback, then
   wait again for checks on the latest commit. Check statuses and unresolved
   review threads before reporting ready. Report missing CI accurately.
-- Leave each PR ready for the human to merge. Start dependent work from updated
-  main after that merge; do not silently stack PRs.
+- Leave the PR ready for the human to merge. Keep dependent work in separate commits.
 - Report external blockers. Never substitute mocks for real-model or phone
   acceptance evidence. Additional PRs are for independent defects or necessary
   later contract changes, not splitting small tasks.
+
+## Implementation status — 2026-10-21
+
+Core code, laptop evaluation, shared prompts, streaming adapters, preparation state, and device evaluation runner are implemented. Laptop quality: 34/36 passed, 36/36 schema-valid, all safety and generation cases passed. See ml/RESULTS.md. A1–A5 are verified. A6–A8 remain acceptance-pending: the User selected the partner machine for phone checks. Person B must connect the Assistant and preparation status to screens. No audio or just-in-time Reminder stretch work is included.

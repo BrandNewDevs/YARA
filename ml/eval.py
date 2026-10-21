@@ -50,7 +50,7 @@ def render_prompt(case):
                                     if fact.startswith('Prefers to be called ')), '')
     values.update(now=case['now'], weekday=case['weekday'])
     # One replacement pass prevents User data from becoming template syntax.
-    return re.sub(r'\{\{(\w+)\}\}', lambda match: values[match[1]], template)
+    return re.sub(r'\{\{(\w+)\}\}', lambda match: values[match[1]], template) + '\nOutput schema: ' + compact(SCHEMAS[case.get('suite', 'chat')])
 
 
 def request_json(endpoint, payload=None, timeout=120):
@@ -169,6 +169,9 @@ def main():
         try:
             if replay:
                 recorded = replay_rows[case['id']]
+                for timing in ('firstReplyMs', 'completionMs'):
+                    if timing in recorded:
+                        row[timing] = recorded[timing]
                 if recorded.get('error'):
                     raise ValueError(recorded['error'])
                 raw = recorded['raw']
