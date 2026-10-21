@@ -15,6 +15,7 @@ function select(): Assistant {
     case 'server': return createAssistant(createServerGenerate({
       endpoint: process.env.EXPO_PUBLIC_ASSISTANT_URL,
       model: process.env.EXPO_PUBLIC_ASSISTANT_MODEL,
+      think: process.env.EXPO_PUBLIC_ASSISTANT_THINK !== 'false',
     }));
     case 'litert': return createAssistant(liteRTBackend.generate);
     default: throw new Error(`Unknown EXPO_PUBLIC_ASSISTANT: ${backend}`);
