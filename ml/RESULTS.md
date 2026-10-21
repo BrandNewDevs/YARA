@@ -82,3 +82,12 @@ The shared runtime and both evaluators now use that history format.
 - Real TypeScript adapter with the full reproduction — valid clarification in one
   call. Browser at localhost:8081 also asks for the time instead of apologizing.
 - TypeScript and lint passed; Node tests 20/20 and Python tests 14/14 passed.
+
+## 2026-10-21 — Spoken Reminder integration baseline
+
+Before integrating onboarding PR #9, `python ml/eval.py --output /tmp/yara-voice-eval.json`
+(Ollama 0.34.0, Gemma 4 E2B) returned **32/37 passed, 37/37 schema-valid; targets FAIL**.
+Failures: routine-two-times, ambiguous-time, appointment-weekly, appointment-date,
+remove-task. All safety and generation cases passed. Reminder delivery adds no
+model calls and does not modify prompts. This result does not satisfy the overall
+90% quality target and is not a phone evaluation.
