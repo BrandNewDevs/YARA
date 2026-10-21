@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IconButton } from './IconButton';
 import { colors, sizes, type } from './theme';
@@ -11,6 +11,16 @@ export function MoreMenu() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+
+  // Android Back closes the menu instead of leaving the screen.
+  useEffect(() => {
+    if (!open) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setOpen(false);
+      return true;
+    });
+    return () => sub.remove();
+  }, [open]);
 
   const go = (path: '/help') => {
     setOpen(false);
@@ -27,7 +37,7 @@ export function MoreMenu() {
         onPress={() => setOpen(true)}
         style={styles.trigger}
       />
-      <Modal transparent animationType="fade" visible={open} onRequestClose={() => setOpen(false)}>
+      {open && (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Close menu"
@@ -43,14 +53,14 @@ export function MoreMenu() {
             </Pressable>
           </View>
         </Pressable>
-      </Modal>
+      )}
     </>
   );
 }
 
 const styles = StyleSheet.create({
   trigger: { position: 'absolute', top: 8, right: 8 },
-  backdrop: { flex: 1, backgroundColor: colors.overlay, alignItems: 'flex-end', padding: 16 },
+  backdrop: { ...StyleSheet.absoluteFill, zIndex: 10, backgroundColor: colors.overlay, alignItems: 'flex-end', padding: 16 },
   menu: {
     minWidth: 200,
     backgroundColor: colors.card,
