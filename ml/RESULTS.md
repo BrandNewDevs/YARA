@@ -91,3 +91,15 @@ Failures: routine-two-times, ambiguous-time, appointment-weekly, appointment-dat
 remove-task. All safety and generation cases passed. Reminder delivery adds no
 model calls and does not modify prompts. This result does not satisfy the overall
 90% quality target and is not a phone evaluation.
+
+After merging onboarding PR #9 (including its prompt changes and two list cases),
+`python ml/eval.py --output /tmp/yara-voice-onboarding-eval.json` returned
+**35/39 passed, 39/39 schema-valid; targets FAIL**. Failures: ambiguous-time,
+appointment-weekly, remove-task, unknown-task. All safety, onboarding and Reminder
+text cases passed. The runtime rejects unknown Task IDs even when raw model
+evaluation reports that failure. This is 89.7%, still below the 90% target.
+
+Integrated verification: TypeScript and ESLint passed; Node tests 26/26; Python
+unit tests 14/14. Web export and full Android app JavaScript bundle passed.
+Android speech and background delivery still require partner-device acceptance;
+the embedded browser reports no speech voices and synthesis-failed.
