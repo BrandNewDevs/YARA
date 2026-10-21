@@ -40,5 +40,6 @@
     "test:domain": "node --import ./ml/node-loader.mjs --test src/domain/timing.test.ts",
     "test:assistant": "node --import ./ml/node-loader.mjs --test src/assistant/assistant.test.ts src/assistant/litert.test.ts"
   },
-  "private": true
+  "private": true,
+  "packageManager": "pnpm@12.3.4"
 }
