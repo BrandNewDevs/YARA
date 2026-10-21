@@ -22,7 +22,7 @@ export default function RemindersScreen() {
             : "When YARA is closed, a notification plays a sound. Tap it to open YARA and hear the Reminder."}
         </Text>
         <Text style={styles.text} accessibilityLiveRegion="polite">
-          {reminders.status}
+          {reminders.status || (reminders.enabled ? "Voice is on." : "Enable voice to hear your Reminders.")}
         </Text>
         <Button
           label={

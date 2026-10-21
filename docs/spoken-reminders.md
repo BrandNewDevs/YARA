@@ -70,3 +70,9 @@ or a browser with a functioning speech engine. On the partner's phone, verify:
    edits/removals, denied permission, and precise timing while idle.
 
 These phone checks are not marked complete by a successful JavaScript bundle.
+
+Browser acceptance on 2026-10-21: completed onboarding with the test name Demo,
+confirmed a Call Alex Appointment for 16:29, and observed its due card and one
+real speech-synthesis attempt with the stored personalized text. The browser
+reported synthesis-failed. Done dismissed the card and it stayed dismissed after
+reload. Audible output remains unverified; Later scheduling has automated coverage.

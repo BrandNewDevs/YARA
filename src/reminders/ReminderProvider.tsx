@@ -30,7 +30,7 @@ export function ReminderProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [enabled, setEnabled] = useState(false);
   const [foreground, setForeground] = useState(AppState.currentState === 'active');
-  const [status, setStatus] = useState('Enable voice to hear your Reminders.');
+  const [status, setStatus] = useState('');
   const [active, setActive] = useState<ReminderOccurrence | null>(null);
   const [busy, setBusy] = useState(false);
   const [speechError, setSpeechError] = useState('');
@@ -144,6 +144,7 @@ export function ReminderProvider({ children }: { children: ReactNode }) {
     try {
       if (later) await postponeReminder(active.id, Date.now() + 10 * 60_000);
       else await finishReminder(active.id);
+      setSpeechError('');
       setActive(null);
       await tick();
     } catch { setSpeechError('Could not save your response. Please try again.'); }
