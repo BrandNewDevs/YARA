@@ -17,15 +17,15 @@ Person B codes against `mockAssistant` until you deliver. Swap-in happens throug
 
 Time boxes are from the start of the 2 hours. Tick `[x]` only when **Done when** passes.
 
-- [ ] **A1 Laptop engine (0:00-0:20).** Choose the engine that runs Gemma 4 E2B with schema-constrained JSON on your laptop. Candidates from research, each to be verified: Ollama, `llama-server` with the `ggml-org/gemma-4-E2B-it-GGUF` weights (supports JSON-schema output), LiteRT-LM tooling. Spend at most 15 minutes choosing.
+- [x] **A1 Laptop engine (0:00-0:20).** Choose the engine that runs Gemma 4 E2B with schema-constrained JSON on your laptop. Candidates from research, each to be verified: Ollama, `llama-server` with the `ggml-org/gemma-4-E2B-it-GGUF` weights (supports JSON-schema output), LiteRT-LM tooling. Spend at most 15 minutes choosing.
   **Done when:** `ml/README.md` states the engine and the exact command that starts it, and one curl or Python call returns schema-valid JSON for the `create-routine` case.
-- [ ] **A2 Baseline (0:20-0:35).** Implement `generate()` in `ml/eval.py` for that engine.
+- [x] **A2 Baseline (0:20-0:35).** Implement `generate()` in `ml/eval.py` for that engine.
   **Done when:** `python ml/eval.py` runs all cases without crashing and `ml/RESULTS.md` has the first pass count.
-- [ ] **A3 Eval set (0:35-0:55).** Grow `ml/evals/cases.jsonl` to at least 25 cases: routine, weekly appointment, one-off with `day`, `inMinutes`, missing time (must ask), change, removal, `remember`, small talk, messy phrasing ("half past eight", typos), at least 5 emergency phrasings, at least 5 medical-advice questions including "should I double my dose".
+- [x] **A3 Eval set (0:35-0:55).** Grow `ml/evals/cases.jsonl` to at least 25 cases: routine, weekly appointment, one-off with `day`, `inMinutes`, missing time (must ask), change, removal, `remember`, small talk, messy phrasing ("half past eight", typos), at least 5 emergency phrasings, at least 5 medical-advice questions including "should I double my dose".
   **Done when:** the file has 25+ valid cases and every `expect.action` value in it exists in the schema.
-- [ ] **A4 Prompt quality (0:55-1:15).** Iterate `ml/prompt.md`.
+- [x] **A4 Prompt quality (0:55-1:15).** Iterate `ml/prompt.md`.
   **Done when:** schema-valid output on 100% of cases, 100% on emergency and medical-advice cases, at least 90% overall, recorded in `ml/RESULTS.md`.
-- [ ] **A5 Onboarding and Reminder texts (in parallel with A4, ready by 1:15).** Add `ml/onboard.md` and `ml/reminder_texts.md` with schemas and 3 eval cases each. `onboard` takes an `OnboardingForm` and returns `OnboardingResult`; `reminder_texts` returns exactly 3 differently worded texts that use the User's preferred name.
+- [x] **A5 Onboarding and Reminder texts (in parallel with A4, ready by 1:15).** Add `ml/onboard.md` and `ml/reminder_texts.md` with schemas and 3 eval cases each. `onboard` takes an `OnboardingForm` and returns `OnboardingResult`; `reminder_texts` returns exactly 3 differently worded texts that use the User's preferred name.
   **Done when:** a sample form gives valid facts, tasks and welcome; a sample Task gives 3 distinct texts that all pass a length check (under 160 characters).
 - [ ] **A6 Server assistant (by 1:00).** Write `src/assistant/server.ts`: an `Assistant` that calls the laptop engine over HTTP (phone reaches it through `adb reverse tcp:<port> tcp:<port>`), streams partial `reply` text through `onPartial`, validates against the schema (write a small validator or add `ajv` via `npx expo install`), and falls back as the invariant says. Add `src/assistant/index.ts` exporting `assistant`, chosen by `EXPO_PUBLIC_ASSISTANT` = `mock | server | litert` (default `mock`).
   **Done when:** `npx tsc --noEmit` passes, and from the phone one chat turn returns a valid `AssistantReply` from the laptop.

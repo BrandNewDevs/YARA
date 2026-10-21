@@ -8,14 +8,17 @@ export type Schedule =
 
 export type TaskKind = 'routine' | 'appointment';
 
+/** Exactly three distinct, nonblank texts, each under 160 characters. */
+export type ReminderTexts = [string, string, string];
+
 export interface Task {
   id: string;
   kind: TaskKind;
   title: string;
   details?: string;
   schedule: Schedule;
-  /** Gemma-written Reminder texts; the app rotates through them. Never empty. */
-  reminderTexts: string[];
+  /** Gemma-written Reminder texts; the app rotates through them. */
+  reminderTexts: ReminderTexts;
   createdAt: string;
 }
 
