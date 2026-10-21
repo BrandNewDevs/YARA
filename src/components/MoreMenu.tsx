@@ -44,7 +44,7 @@ export function MoreMenu() {
     return () => sub.remove();
   }, [open]);
 
-  const go = (path: '/help') => {
+  const go = (path: '/help' | '/reminders') => {
     close();
     router.push(path);
   };
@@ -78,6 +78,10 @@ export function MoreMenu() {
               </View>
             ) : (
               <>
+                <Pressable accessibilityRole="menuitem" accessibilityLabel="Spoken Reminders"
+                  onPress={() => go('/reminders')} style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
+                  <Text style={styles.itemLabel}>Spoken Reminders</Text>
+                </Pressable>
                 <Pressable
                   accessibilityRole="menuitem"
                   accessibilityLabel="Help"
