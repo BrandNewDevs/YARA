@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
+import { IconButton } from './IconButton';
 import { colors, sizes, type } from './theme';
 
 interface Props {
@@ -8,8 +9,12 @@ interface Props {
   onSend: (text: string) => void;
 }
 
+const MIN_HEIGHT = 56;
+const MAX_HEIGHT = 180;
+
 export function ChatInput({ disabled, onSend }: Props) {
   const [text, setText] = useState('');
+  const [height, setHeight] = useState(MIN_HEIGHT);
   const canSend = !disabled && text.trim().length > 0;
 
   const send = () => {
@@ -19,52 +24,45 @@ export function ChatInput({ disabled, onSend }: Props) {
   };
 
   return (
-    <View style={styles.row}>
+    <View style={styles.composer}>
       <TextInput
+        accessibilityLabel="Message to YARA"
         value={text}
         onChangeText={setText}
         onSubmitEditing={send}
         placeholder="Type here"
         placeholderTextColor={colors.muted}
-        style={styles.input}
+        // Grows with the text up to MAX_HEIGHT, then scrolls.
+        onContentSizeChange={(e) =>
+          setHeight(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, Math.ceil(e.nativeEvent.contentSize.height) + 20)))
+        }
+        style={[styles.input, { height }]}
         multiline
         returnKeyType="send"
         submitBehavior="blurAndSubmit"
       />
-      <Pressable
-        accessibilityRole="button"
-        disabled={!canSend}
-        onPress={send}
-        style={[styles.send, !canSend && styles.disabled]}>
-        <Text style={styles.sendLabel}>Send</Text>
-      </Pressable>
+      <IconButton icon="arrow-right" label="Send" variant="default" disabled={!canSend} onPress={send} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: sizes.gap, alignItems: 'flex-end' },
+  composer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 8,
+    paddingLeft: 16,
+    paddingRight: 8,
+    paddingVertical: 12,
+    backgroundColor: colors.card,
+    borderRadius: sizes.radius + 8,
+  },
   input: {
     flex: 1,
-    minHeight: sizes.button,
-    maxHeight: 140,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
     fontSize: type.body,
-    color: colors.text,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderRadius: sizes.radius,
+    color: colors.foreground,
+    // Web would draw its own outline around the text box.
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : {}),
   },
-  send: {
-    minHeight: sizes.button,
-    minWidth: 96,
-    paddingHorizontal: 20,
-    borderRadius: sizes.radius,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  disabled: { opacity: 0.4 },
-  sendLabel: { color: colors.onPrimary, fontSize: type.body, fontWeight: '700' },
 });

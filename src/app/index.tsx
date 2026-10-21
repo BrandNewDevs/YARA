@@ -7,8 +7,8 @@ import { assistant } from '@/assistant';
 import type { AssistantContext, ProposedSchedule, ProposedTask } from '@/assistant/types';
 import { ChatInput } from '@/components/ChatInput';
 import { ConfirmCard } from '@/components/ConfirmCard';
-import { HelpButton } from '@/components/HelpButton';
 import { MessageBubble } from '@/components/MessageBubble';
+import { MoreMenu } from '@/components/MoreMenu';
 import { colors, sizes } from '@/components/theme';
 import { createFact, createTask, deleteTask, listFacts, listTasks, updateTask } from '@/domain/db';
 import { toSchedule } from '@/domain/timing';
@@ -176,9 +176,7 @@ export default function ChatScreen() {
           <ChatInput disabled={busy || proposal !== null} onSend={send} />
         </View>
       </KeyboardAvoidingView>
-      <View style={styles.help}>
-        <HelpButton />
-      </View>
+      <MoreMenu />
     </SafeAreaView>
   );
 }
@@ -186,7 +184,6 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   container: { flex: 1, backgroundColor: colors.background },
-  help: { position: 'absolute', top: 8, right: 16 },
   list: { padding: 16, paddingTop: 72, gap: sizes.gap },
-  footer: { padding: 12, borderTopWidth: 1, borderTopColor: colors.border },
+  footer: { padding: 12 },
 });
